@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:r34_01/pages/cart_page.dart';
-import 'package:r34_01/pages/home_page.dart';
-import 'package:r34_01/pages/menu_page.dart';
-import 'package:r34_01/pages/profile_page.dart';
-import 'package:r34_01/pages/save_page.dart';
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
+import 'package:r34_01/cart_page/cart_page.dart';
+import 'package:r34_01/home_page/home_page.dart';
+import 'package:r34_01/menu_page/menu_page.dart';
+import 'package:r34_01/profile_page/profile_page.dart';
+import 'package:r34_01/save_page/save_page.dart';
 
-class EntryPointUi extends StatefulWidget {
-  const EntryPointUi({super.key});
+
+class BottomNavBar extends StatefulWidget {
+  const BottomNavBar({super.key});
 
   @override
-  State<EntryPointUi> createState() => _EntryPointUiState();
+  State<BottomNavBar> createState() => _BottomNavBarState();
 }
 
-class _EntryPointUiState extends State<EntryPointUi> {
-  int selectedIndex = 0;
+class _BottomNavBarState extends State<BottomNavBar> {
+  int _selectedIndex = 0;
 
-  // الصفحات اللي هيتبدل بينها
-  final List<Widget> pages = [
+  // صفحات التطبيق
+  final List<Widget> _pages = [
     const HomePage(),
     const SavePage(),
     const CartPage(),
@@ -24,43 +26,29 @@ class _EntryPointUiState extends State<EntryPointUi> {
     const MenuPage(),
   ];
 
-  void onItemTapped(int index) {
-    setState(() {
-      selectedIndex = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: pages[selectedIndex], // الصفحة اللي بتتغير حسب الزرار
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: selectedIndex,
-        onTap: onItemTapped,
-        selectedItemColor: Colors.green,
-        unselectedItemColor: Colors.black,
-        showUnselectedLabels: true,
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: ConvexAppBar(
+        height: 46,
+        backgroundColor: Colors.green,
+        color: Colors.white,
+        activeColor: Colors.white,
+        style: TabStyle.fixed,
+        initialActiveIndex: _selectedIndex,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite_border),
-            label: 'Save',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'Cart',
-          ),
-
-          BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Menu'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: 'Profile',
-          ),
+          TabItem(icon: Icons.home_outlined, title: 'Home'),
+          TabItem(icon: Icons.favorite_border, title: 'Save'),
+          TabItem(icon: Icons.shopping_cart, title: 'Cart'),
+          TabItem(icon: Icons.person_outline, title: 'Profile'),
+          TabItem(icon: Icons.menu, title: 'Menu'),
         ],
+        onTap: (int index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
       ),
     );
   }
