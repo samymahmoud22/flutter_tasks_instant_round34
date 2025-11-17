@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:market_app/source/data.dart';
 
 import '../entity/product.dart';
 import '../widgets/product_card.dart';
@@ -8,63 +9,33 @@ import '../widgets/section_header.dart';
 import '../screens/product_details_page.dart';
 
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatefulWidget { 
   const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
+   @override State<HomePage> createState() => _HomePageState(); 
+  }
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   String _currentAddress = "Getting location...";
 
-  final List<Product> offers = [
-    Product(
-      image: "assets/images/product_1.png",
-      name: "Bananas",
-      status: "Fresh!!!",
-      price: "\$4.99",
-    ),
-    Product(
-      image: "assets/images/product_6.png",
-      name: "Apples",
-      status: "Very fresh!!!",
-      price: "\$2.99",
-    ),
-    Product(
-      image: "assets/images/product_1.png",
-      name: "Strawberry",
-      status: "Fresh!!!",
-      price: "\$6.99",
-    ),
-  ];
-
-  final List<Product> bestSelling = [
-    Product(
-      image: "assets/images/product_6.png",
-      name: "Apples",
-      status: "Fresh!!!",
-      price: "\$2.99",
-    ),
-    Product(
-      image: "assets/images/product_8.png",
-      name: "Ginger",
-      status: "Very fresh!!!",
-      price: "\$1.99",
-    ),
-    Product(
-      image: "assets/images/product_1.png",
-      name: "Banana",
-      status: "Fresh!!!",
-      price: "\$4.99",
-    ),
-  ];
+  final Data data = Data(); // كلاس Data الجديد
+  List<Product> offers = [];
+  List<Product> bestSelling = [];
 
   @override
   void initState() {
     super.initState();
     _getCurrentLocation();
+    _loadProducts();
+  }
+
+  Future<void> _loadProducts() async {
+    List<Product> products = await data.getAllProducts();
+    setState(() {
+      // نفترض: أول 3 منتجات للعروض، والباقي للأكثر مبيعاً
+      offers = products.take(3).toList();
+      bestSelling = products.length > 3 ? products.sublist(3, products.length) : [];
+    });
   }
 
   Future<void> _getCurrentLocation() async {
@@ -144,7 +115,7 @@ class _HomePageState extends State<HomePage> {
 
                 const SizedBox(height: 20),
 
-                // 🔹 Search bar
+                //  Search bar
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.grey[200],
@@ -164,7 +135,7 @@ class _HomePageState extends State<HomePage> {
 
                 const SizedBox(height: 20),
 
-                // 🔹 Banner
+                //  Banner
                 Container(
                   height: 150.0,
                   width: double.infinity,
@@ -179,13 +150,13 @@ class _HomePageState extends State<HomePage> {
 
                 const SizedBox(height: 30),
 
-                // 🔹 Offers Section
+                //  Offers Section
                 const SectionHeader(title: "Exclusive Offer"),
                 _buildHorizontalCardList(offers, cardWidth),
 
                 const SizedBox(height: 25),
 
-                // 🔹 Best Selling Section
+                //  Best Selling Section
                 const SectionHeader(title: "Best Selling"),
                 _buildHorizontalCardList(bestSelling, cardWidth),
               ],
@@ -197,29 +168,31 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildHorizontalCardList(List<Product> products, double cardWidth) {
-  return SizedBox(
-    height: 250,
-    child: ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: products.length,
-      itemBuilder: (context, index) {
-        final product = products[index];
-        return Padding(
-          padding: EdgeInsets.only(right: index == products.length - 1 ? 0 : 15),
-          child: GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ProductDetailsPage(product: product),
-                ),
-              );
-            },
-            child: ProductCard(product: product, width: cardWidth),
-          ),
-        );
-      },
-    ),
-  );
-}
+    return SizedBox(
+      height: 250,
+      child: products.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                final product = products[index];
+                return Padding(
+                  padding: EdgeInsets.only(right: index == products.length - 1 ? 0 : 15),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProductDetailsPage(product: product),
+                        ),
+                      );
+                    },
+                    child: ProductCard(product: product, width: cardWidth),
+                  ),
+                );
+              },
+            ),
+    );
+  }
 }

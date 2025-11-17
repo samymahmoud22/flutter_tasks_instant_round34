@@ -25,31 +25,40 @@ class ProductCard extends StatelessWidget {
             Expanded(
               flex: 3,
               child: Center(
-                child: Image.asset(
-                  product.image,
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const Center(child: Icon(Icons.broken_image, size: 50, color: Colors.grey)),
-                ),
+                child: product.image.startsWith("http")
+                    ? Image.network(
+                        product.image,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Center(child: Icon(Icons.broken_image, size: 50, color: Colors.grey)),
+                      )
+                    : Image.asset(
+                        product.image,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Center(child: Icon(Icons.broken_image, size: 50, color: Colors.grey)),
+                      ),
               ),
             ),
             const SizedBox(height: 10),
             Text(
-              product.name,
+              product.title, //  product.name
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
             Text(
-              product.status,
+              product.description, //  product.status
               style: const TextStyle(color: Colors.grey, fontSize: 14),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
             const Spacer(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  product.price,
+                  "\$${product.price}", // price  API
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 Container(
