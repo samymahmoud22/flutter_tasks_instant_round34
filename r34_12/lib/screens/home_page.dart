@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 
+import '../entity/product.dart';
+import '../widgets/product_card.dart';
+import '../widgets/section_header.dart';
+import '../screens/product_details_page.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,19 +19,47 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   String _currentAddress = "Getting location...";
 
-  final List<Map<String, String>> offers = [
-    {"image": "assets/images/product_1.png", "name": "Bananas", "status": "Fresh!!!", "price": "\$4.99"},
-    {"image": "assets/images/product_6.png", "name": "Apples", "status": "Very fresh!!!", "price": "\$2.99"},
-    {"image": "assets/images/product_1.png", "name": "Strawberry", "status": "Fresh!!!", "price": "\$6.99"},
+  final List<Product> offers = [
+    Product(
+      image: "assets/images/product_1.png",
+      name: "Bananas",
+      status: "Fresh!!!",
+      price: "\$4.99",
+    ),
+    Product(
+      image: "assets/images/product_6.png",
+      name: "Apples",
+      status: "Very fresh!!!",
+      price: "\$2.99",
+    ),
+    Product(
+      image: "assets/images/product_1.png",
+      name: "Strawberry",
+      status: "Fresh!!!",
+      price: "\$6.99",
+    ),
   ];
 
-  final List<Map<String, String>> bestSelling = [
-    {"image": "assets/images/product_6.png", "name": "Apples", "status": "Fresh!!!", "price": "\$2.99"},
-    {"image": "assets/images/product_8.png", "name": "Ginger", "status": "Very fresh!!!", "price": "\$1.99"},
-    {"image": "assets/images/product_1.png", "name": "Banana", "status": "Fresh!!!", "price": "\$4.99"},
+  final List<Product> bestSelling = [
+    Product(
+      image: "assets/images/product_6.png",
+      name: "Apples",
+      status: "Fresh!!!",
+      price: "\$2.99",
+    ),
+    Product(
+      image: "assets/images/product_8.png",
+      name: "Ginger",
+      status: "Very fresh!!!",
+      price: "\$1.99",
+    ),
+    Product(
+      image: "assets/images/product_1.png",
+      name: "Banana",
+      status: "Fresh!!!",
+      price: "\$4.99",
+    ),
   ];
-
-
 
   @override
   void initState() {
@@ -89,15 +122,10 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // 🔹 Logo
-                Image.asset(
-                  "assets/images/logo.png", 
-                  height: 50,
-                  fit: BoxFit.contain,
-                ),
+                Image.asset("assets/images/logo.png", height: 50, fit: BoxFit.contain),
                 const SizedBox(height: 10),
 
-                //  Location
+                // 🔹 Location
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -113,9 +141,10 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 20),
 
-                //  Search bar
+                // 🔹 Search bar
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.grey[200],
@@ -132,32 +161,32 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
+
                 const SizedBox(height: 20),
 
-                //  Banner 
+                // 🔹 Banner
                 Container(
-                  height: 150.0, 
-                  width: double.infinity, 
+                  height: 150.0,
+                  width: double.infinity,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
                     image: const DecorationImage(
-                    
-                      image: AssetImage('assets/images/banner.png'), 
-                      fit: BoxFit.cover, 
+                      image: AssetImage('assets/images/banner.png'),
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 30),
 
-                //  Offers Section
-                _buildSectionHeader("Exclusive offer"),
+                // 🔹 Offers Section
+                const SectionHeader(title: "Exclusive Offer"),
                 _buildHorizontalCardList(offers, cardWidth),
 
                 const SizedBox(height: 25),
 
-                //  Best Selling Section
-                _buildSectionHeader("Best Selling"),
+                // 🔹 Best Selling Section
+                const SectionHeader(title: "Best Selling"),
                 _buildHorizontalCardList(bestSelling, cardWidth),
               ],
             ),
@@ -167,100 +196,30 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-        TextButton(
-          onPressed: () {},
-          child: const Text(
-            "See all",
-            style: TextStyle(color: Colors.green, fontWeight: FontWeight.w600, fontSize: 16),
+  Widget _buildHorizontalCardList(List<Product> products, double cardWidth) {
+  return SizedBox(
+    height: 250,
+    child: ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: products.length,
+      itemBuilder: (context, index) {
+        final product = products[index];
+        return Padding(
+          padding: EdgeInsets.only(right: index == products.length - 1 ? 0 : 15),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProductDetailsPage(product: product),
+                ),
+              );
+            },
+            child: ProductCard(product: product, width: cardWidth),
           ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildHorizontalCardList(List<Map<String, String>> items, double cardWidth) {
-    return SizedBox(
-      height: 250,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          final item = items[index];
-          return Padding(
-            padding: EdgeInsets.only(right: index == items.length - 1 ? 0 : 15),
-            child: _buildProductCard(item, cardWidth),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildProductCard(Map<String, String> item, double width) {
-    return Container(
-      width: width,
-      height: 250,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.grey.shade200, width: 1),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              flex: 3,
-              child: Center(
-                child: Image.asset(
-                  item["image"]!,
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const Center(child: Icon(Icons.broken_image, size: 50, color: Colors.grey)),
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              item["name"]!,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            Text(
-              item["status"]!,
-              style: const TextStyle(color: Colors.grey, fontSize: 14),
-            ),
-            const Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  item["price"]!,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                Container(
-                  height: 40,
-                  width: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.green,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.add, color: Colors.white, size: 20),
-                    onPressed: () {},
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+        );
+      },
+    ),
+  );
+}
 }
